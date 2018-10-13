@@ -7,87 +7,90 @@ import string
 #Maintain status of if typo is found or not
 typo = False;
 
-#Accept input from user as the raw input (string)
-my_file = raw_input("Enter the name of the file you wish to check: ");
-
-#Turn the list of words into an mmap to prevent any major memory issues
-dictionary = open("english-words-master\words.txt", "r") 
-d = mmap.mmap(dictionary.fileno(), 0, access=mmap.ACCESS_READ)
-
-typos = [];
-
-#debug statement
-print("NOW CHECKING: " + my_file + "\n");
+my_file = "";
 
 
+while True:
 
-#open the file and for every word in each line:
-try:
-    with open(my_file, "r") as f:
-        for line in f:
-            for word in line.split():
 
-                #strip any non-essential punctuation (periods, colons, etc.)
-                word = re.sub("[^A-Za-z'-]", '', word);
+        #Turn the list of words into an mmap to prevent any major memory issues
+        dictionary = open("english-words-master\words.txt", "r");
+        d = mmap.mmap(dictionary.fileno(), 0, access=mmap.ACCESS_READ)
+        
+        #Accept input from user as the raw input (string)
+        my_file = raw_input("Enter the name of the file you wish to check, or type 'stop' to exit: ");
 
-                
-                #If something doesn't even look like a word in the first place
-                #Mention it and continue searching
-                if (not re.match("^[A-Za-z'-]+$", word)):
 
-                    #debug
-                    print ("\"" + word + "\" is not a word\n");
+        
+        if (my_file == "stop"):
+                break;
 
+        typos = [];
+
+        print("NOW CHECKING: " + my_file + "\n");
+
+        
+
+        
+        try:
+                #open the file and for every word in each line:
+                with open(my_file, "r") as f:
+                        for line in f:
+                                for word in line.split():
+
+                                       
+
+
+                                        #Check if the word doesn't exist as it is.
+                                        if d.find(word) == -1:
+                                                
+                                                
+                                                #strip any punctuation (periods, colons, etc.)
+                                                word = re.sub("[^A-Za-z'-]", '', word);
+
+                                                #If it starts with a capital letter, and has all lowercase following it
+                                                if (re.match("^[A-Z][a-z-'.]+$", word)):
+ 
+                                                        #if the word isn't found in the dictionary as it is
+                                                        #(Proper Nouns)
+                                                        if d.find(word) == -1:
+                                                                
+                                                                #And if the word doesn't exist as a lowercase version, then consider it a typo
+                                                                if d.find(string.lower(word)) == -1:
+                                                                        typos.append(word);
                     
-                    continue;
+                                                #if it's not that particular format
+                                                else:
 
-                #if something seems like a word
+                                                        #If the word doesn't exist, even as a lowercase version, then consider it a typo
+                                                        if d.find(string.lower(word)) == -1 and d.find(word) == -1:
+
+                                                            typos.append(word);
+
+
+                #Print all the typos found, if any. Or tell user none were found
+                if len(typos)==0:
+                        print ("No typos found\n");
                 else:
+                        print ("The following typos were found in " + my_file + ": \n");
+                        for w in typos:
+                                print (w);
 
-                    #If it starts with a capital letter, and has lowercase following it
-                    if (re.match("^[A-Z][a-z-']+$", word)):
-
-                        #debug
-                        #print ("\"" + word + "\" starts with a capital");
-
-                        #if the word isn't found in the dictionary as it is
-                        if d.find(word) == -1:
-
-                            #And if the word doesn't exist as a lowercase version, then consider it a typo
-                            if not d.find(string.lower(word)):
-                                
-                                typos.append(word);
-                                
-                    #if it's not that particular format
-                    else:
-
-                        #If not in the dictionary, add it to the typo list
-                        if d.find(word) == -1:
-
-                            #debug
-                            #print ("\"" + word + "\" seems like a word, but is ultimately not a word\n");
-                            typos.append(word);
+                        print ("\n");
 
 
-    print ("The following typos were found in the file:\n")
-
-    if len(typos)==0:
-        print ("No typos found\n");
-    else:
-        for w in typos:
-            print (w + "\n");
+                #close the file before exiting
+                f.close()
 
 
-    #close the file before exiting
-    f.close()
-    dictionary.close()
 
+        #If file doesn't exist, notify user and stop the program
+        except IOError: 
+                print ("ERROR: File " + my_file + " does not exist\n");
+                
 
-#If file doesn't exist, notify user
-except IOError: 
-    print ("ERROR: File " + my_file + " does not exist\n");
-    
-
+#Close the dictionary file    
+dictionary.close()
 
 
 

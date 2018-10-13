@@ -1,0 +1,19 @@
+10/13/2018
+
+Project can currently accept files just fine, however might be too lengthy and too reliant on a lot of if statements for the task of spell-checking.
+
+Still can't pin down exactly what constitutes a "word" in the given word bank, so for now will accept all text in files, at the express detriment of potential security holes
+
+Current Restrictions and concerns
+	- Will only treat things as typos if in wildly mixed-case or otherwise plain not in the word bank	
+	- Will strip punctuation, however this may end up giving it some trouble with acronyms
+	- No, it cannot check any sort of context for if a word is misspelled or not, reliant entirely on the word bank.
+	- Word bank also not very protected, so new phrases could easily be added if able
+	- Only works in the shell as far as I know, no sort of command line interface or nothing else.
+	
+	
+To Run
+	- Python 2.7 compatible at the moment
+	- Runs entirely within the Python shell, have to specify a proper path name to actually check files
+	- Will continually run until user inputs "stop"
+	
